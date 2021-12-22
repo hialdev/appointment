@@ -18,6 +18,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/clear-cache', function() {
+    $exitCode = Artisan::call('config:cache');
+    return 'DONE'; //Return anything
+});
+Route::get('/clear-view', function() {
+    $exitCode = Artisan::call('view:cache');
+    return 'DONE Clear View Cache'; //Return anything
+});
 
 Route::get('/', function () {
     return view('welcome');
