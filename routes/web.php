@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -21,12 +25,17 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::group(['middleware' => ['role:admin|manager']], function () {
-    Route::get('/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
+Route::group(['middleware' => ['role:admin']], function () {
+    Route::get('/ceo', [DashboardController::class, 'admin'])->name('dashboard.admin');
+});
+Route::group(['middleware' => ['role:dosen']], function () {
+    Route::get('/ruangdosen', [DashboardController::class, 'dosen'])->name('dashboard.dosen');
+});
+Route::group(['middleware' => ['role:mahasiswa']], function () {
+    Route::get('/cafetaria', [DashboardController::class, 'mahasiswa'])->name('dashboard.mahasiswa');
 });
 
-Route::group(['middleware' => ['role:user']], function () {
-    Route::get('/dashboard', [DashboardController::class, 'user'])->name('dashboard.admin');
-});
+Route::resource('menu', MenuController::class);
+Route::resource('dosen', DosenController::class);
+Route::resource('mahasiswa', MahasiswaController::class);
+Route::resource('jadwal', JadwalController::class);

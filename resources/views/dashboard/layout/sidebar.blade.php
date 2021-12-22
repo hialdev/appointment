@@ -14,29 +14,25 @@
     </div>
     <div class="sidebar-menu">
         <ul class="menu">
-            <li class="sidebar-title">Menu</li>
 
-            <li class="sidebar-item  ">
-                <a href="index.html" class='sidebar-link'>
+            <li class="sidebar-item {{ request()->is($dash_url) ? 'active' : '' }}">
+                <a href="{{ url($dash_url) }}" class='sidebar-link'>
                     <i class="bi bi-grid-fill"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
-
-            <li class="sidebar-item  has-sub">
-                <a href="#" class='sidebar-link'>
-                    <i class="bi bi-stack"></i>
-                    <span>Dropdown</span>
-                </a>
-                <ul class="submenu ">
-                    <li class="submenu-item ">
-                        <a href="component-alert.html">Alert</a>
+            @foreach ($menus as $menu)
+                @foreach ($menu->role as $mr)
+                    @if ($mr->id == Auth::user()->roles[0]->id)
+                    <li class="sidebar-item {{ request()->is($menu->url.'*') ? 'active' : '' }}">
+                        <a href="{{ url($menu->url) }}" class='sidebar-link'>
+                            <i class="bi bi-{{ $menu->icon }}"></i>
+                            <span style="text-transform:capitalize">{{ $menu->menu }}</span>
+                        </a>
                     </li>
-                    <li class="submenu-item ">
-                        <a href="component-badge.html">Badge</a>
-                    </li>
-                </ul>
-            </li>
+                    @endif
+                @endforeach
+            @endforeach
             <li class="sidebar-item">
                 <a class="sidebar-link" style="background-color: rgba(255, 0, 0, 0.089)" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="bi bi-door-open-fill text-danger"></i>

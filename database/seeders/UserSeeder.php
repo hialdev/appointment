@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $admin = User::create([
-            'name' => 'Admin',
+            'name' => 'Administrator',
             'email' => 'admin@hialdev.com',
             'password' => bcrypt('12345678'),
         ]);
@@ -23,19 +23,19 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         $user = User::create([
-            'name' => 'Content Manager',
-            'email' => 'content@hialdev.com',
+            'name' => 'Dosen',
+            'email' => 'dosen@hialdev.com',
             'password' => bcrypt('12345678'),
         ]);
 
-        $user->assignRole('manager');
+        $user->assignRole('dosen');
 
         $user = User::create([
-            'name' => 'User',
-            'email' => 'user@hialdev.com',
+            'name' => 'Mahasiswa',
+            'email' => 'mahasiswa@hialdev.com',
             'password' => bcrypt('12345678'),
         ]);
 
-        $user->assignRole('user');
+        $user->assignRole('mahasiswa');
     }
 }
