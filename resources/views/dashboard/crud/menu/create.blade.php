@@ -7,9 +7,9 @@
         <h3>Tambah Menu</h3>
         <form action="{{ route('menu.store') }}" method="POST">
             @csrf
-            @include('forms.input',['label'=>"Nama Menu",'name'=>'menu','placeholder'=>'Masukan nama menu','type'=>'text'])
-            @include('forms.input',['label'=>"Icon",'name'=>'icon','placeholder'=>'Icon untuk menu','type'=>'text'])
-            @include('forms.input',['label'=>"URL",'name'=>'url','placeholder'=>'URL menu','type'=>'text'])
+            @include('forms.input',['label'=>"Nama Menu",'name'=>'menu','placeholder'=>'Masukan nama menu','type'=>'text','value'=>''])
+            @include('forms.input',['label'=>"Icon",'name'=>'icon','placeholder'=>'Icon untuk menu','type'=>'text','value'=>''])
+            @include('forms.input',['label'=>"URL",'name'=>'url','placeholder'=>'URL menu','type'=>'text','value'=>''])
             <div class="col-4">
                 <div class="form-group">
                     <label>Akses Role</label>
