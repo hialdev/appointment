@@ -13,17 +13,17 @@ class CreateJadwalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('jadwals', function (Blueprint $table) {
-            $table->id();
-            $table->integer('mahasiswa_id');
-            $table->integer('dosen_id');
-            $table->string('judul');
-            $table->string('deskripsi');
-            $table->dateTime('awal');
-            $table->dateTime('akhir');
-            $table->boolean('status');
-            $table->timestamps();
-        });
+        // Schema::create('jadwals', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->integer('mahasiswa_id');
+        //     $table->integer('dosen_id');
+        //     $table->string('judul');
+        //     $table->string('deskripsi');
+        //     $table->dateTime('awal');
+        //     $table->dateTime('akhir');
+        //     $table->boolean('status');
+        //     $table->timestamps();
+        // });
     }
 
     /**

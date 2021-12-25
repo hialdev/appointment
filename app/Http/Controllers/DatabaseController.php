@@ -3,10 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuForm;
 use App\Models\Role;
+use App\Models\Table;
+use Exception;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
-class MenuController extends Controller
+class DatabaseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +22,9 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus = Menu::all();
-        return view('dashboard.crud.menu.index',compact(['menus']));
+        $route = 'database';
+        $tables = Table::all();
+        return view('dashboard.crud.database.index',compact(['tables','route']));
     }
 
     /**
@@ -26,8 +34,7 @@ class MenuController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
-        return view('dashboard.crud.menu.create',compact(['roles']));
+        return view('dashboard.crud.database.create');
     }
 
     /**
@@ -38,36 +45,55 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'menu' => "required|string",
-            'icon' => "required|string",
-            'url' => "required",
-            'menu_opt' => "required",
-        ]);
+        $data = $request->all();
+        if (!Schema::hasTable($data['table'])) {
+            try {
+                $table_name = Str::plural($data['table']);
+                Schema::create($table_name, function (Blueprint $table) use ($data,$table_name) {
+                    $table->bigIncrements('id');
+                    for ($i=0; $i < count($data['property']); $i++) { 
+                        if ($data['type_data'][$i] == 'string') {
+                            $table->string($data['property'][$i],($data['length'][$i] !== null)?$data['length'][$i]:255);
+                        }elseif ($data['type_data'][$i] == 'varchar') {
+                            $table->string($data['property'][$i],($data['length'][$i] !== null)?$data['length'][$i]:255);
+                        }elseif ($data['type_data'][$i] == 'integer') {
+                            $table->integer($data['property'][$i]);
+                        }elseif ($data['type_data'][$i] == 'text') {
+                            $table->text($data['property'][$i]);
+                        }
 
-        $menu = new Menu;
-        $menu->menu = $data['menu'];
-        $menu->icon = $data['icon'];
-        $menu->url = $data['url'];
-        $menu->save();
+                        $mf = new MenuForm;
+                        $mf->table_name = $table_name;
+                        $mf->data_name = $data['property'][$i];
+                        $mf->data_type = $data['type_data'][$i];
+                        $mf->data_length = ($data['length'][$i] !== null)?$data['length'][$i]:'';
+                        $mf->save();
+                    }
+                    $table->timestamps();
+                });
 
-        $role = Role::find($data['menu_opt']);
-        $menu->role()->attach($role);
+                $db = new Table;
+                $db->table = $table_name;
+                $db->model = ucfirst(Str::singular($table_name));
+                $db->save();
 
-        if ($menu) {
-            return redirect()
-                ->route('menu.index')
-                ->with([
-                    'success' => 'Hore, Data berhasil ditambahkan!'
-                ]);
-        } else {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with([
-                    'error' => 'Error, Harap masukan data dengan benar'
-                ]);
+
+                return redirect()
+                    ->route('database.index')
+                    ->with([
+                        'success' => 'Hore, Data berhasil ditambah!'
+                    ]);
+            }
+            catch (Exception $e) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with([
+                        'error' => 'Error, Data gagal ditambah'. $e,
+                    ]);
+            }
         }
+
     }
 
     /**
@@ -164,21 +190,21 @@ class MenuController extends Controller
      */
     public function destroy($id)
     {
-        $menu = menu::findOrFail($id);
-        $menu->delete();
-
-        if ($menu) {
+        $table = Table::findOrFail($id);
+        try {
+            $table->delete();
+            Schema::dropIfExists($table->table);
+            
             return redirect()
-                ->route('menu.index')
+                ->route('database.index')
                 ->with([
                     'success' => 'Data berhasil dihapus!'
                 ]);
-        } else {
+        } catch (Exception $e) {
             return redirect()
                 ->back()
-                ->withInput()
                 ->with([
-                    'error' => 'Error, Data gagal dihapus'
+                    'error' => 'Error, Data gagal ditambah <br/>'. $e,
                 ]);
         }
     }

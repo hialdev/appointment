@@ -1,7 +1,6 @@
 @extends('dashboard.layout.app')
 @section('title_dashboard',"Edit $menu->menu Menu")
 @section('dashcontent')
-
 <section class="row">
     <div class="col-12 bg-white p-5 rounded-3">
         <h3>Edit Menu {{ $menu->menu }}</h3>

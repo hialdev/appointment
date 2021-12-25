@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDosensTable extends Migration
+class CreateTypeFormsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,9 @@ class CreateDosensTable extends Migration
      */
     public function up()
     {
-        Schema::create('dosens', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('nidn')->unique();
-            $table->string('alamat');
-            $table->string('kontak');
-            $table->timestamps();
+        Schema::create('type_forms', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('type_name');
         });
     }
 
@@ -30,6 +26,6 @@ class CreateDosensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dosens');
+        Schema::dropIfExists('type_forms');
     }
 }

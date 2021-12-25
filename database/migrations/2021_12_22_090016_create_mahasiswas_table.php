@@ -13,15 +13,15 @@ class CreateMahasiswasTable extends Migration
      */
     public function up()
     {
-        Schema::create('mahasiswas', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('nim')->unique();
-            $table->date('tanggal_lahir');
-            $table->string('alamat');
-            $table->string('tahun_masuk');
-            $table->timestamps();
-        });
+        // Schema::create('mahasiswas', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('nama');
+        //     $table->string('nim')->unique();
+        //     $table->date('tanggal_lahir');
+        //     $table->string('alamat');
+        //     $table->string('tahun_masuk');
+        //     $table->timestamps();
+        // });
     }
 
     /**

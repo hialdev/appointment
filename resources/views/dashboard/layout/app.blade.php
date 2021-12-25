@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     <link rel="stylesheet" href="/assets/vendors/iconly/bold.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <!-- Include Choices CSS -->
     <link rel="stylesheet" href="/assets/vendors/choices.js/choices.min.css" />
     <link rel="stylesheet" href="/assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
@@ -52,6 +53,7 @@
             </header>
 
             <div class="page-heading">
+                @include('compontents.alerts')
                 @yield('dashcontent')
             </div>
 
@@ -71,6 +73,8 @@
 
     <script src="/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="/assets/vendors/jquery/jquery.min.js"></script>
+    <script src="/js/custom.js"></script>
     <script src="/assets/js/pages/dashboard.js"></script>
     <!-- Include Choices JavaScript -->
     <script src="/assets/vendors/choices.js/choices.min.js"></script>
