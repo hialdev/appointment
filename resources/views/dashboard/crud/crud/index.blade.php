@@ -15,6 +15,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $check = \App\Models\Crud::all()->keyBy('table_name');
+                    @endphp
                     @forelse ($tables as $data)
                     <tr>
                         <td>{{ $loop->index+1 }}</td>
@@ -22,11 +25,18 @@
                         <td>{{ $data->model }}</td>
                         <td class="text-center">
                             <form onsubmit="return confirm('Apakah Anda Yakin ?');" action="{{ route('crud.destroy',$data->id) }}" method="POST">
-                                <a href="{{ route('crud.create','id='.$data->id) }}" class="btn btn-sm btn-success">Buat CRUD</a>
-                                <a href="{{ route('crud.edit',$data->id) }}" class="btn btn-sm btn-primary">Edit CRUD</a>
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Hapus CRUD</button>
+
+                                @if ($check->get(Str::plural($data->table)) !== null)
+                                    <a href="{{ route('crud.create','id='.$data->id) }}" class="btn btn-sm btn-success disabled">Buat CRUD</a>
+                                    <a href="{{ route('crud.edit',$data->id) }}" class="btn btn-sm btn-primary">Edit CRUD</a>
+                                    <button type="submit" class="btn btn-sm btn-danger">Hapus CRUD</button>
+                                @else
+                                    <a href="{{ route('crud.create','id='.$data->id) }}" class="btn btn-sm btn-success">Buat CRUD</a>
+                                    <a href="{{ route('crud.edit',$data->id) }}" class="btn btn-sm btn-primary disabled">Edit CRUD</a>
+                                    <button type="submit" class="btn btn-sm btn-danger" disabled>Hapus CRUD</button>
+                                @endif
                             </form>
                         </td>
                     </tr>

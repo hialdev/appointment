@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Crud;
 use App\Models\Menu;
 use App\Models\MenuForm;
 use App\Models\Role;
@@ -117,14 +118,10 @@ class DatabaseController extends Controller
      */
     public function edit($id)
     {
-        $menu = Menu::findOrFail($id);
-        $roles = Role::all();
-        $menu_role=[];
-        foreach ($menu->role as $mr) {
-            $menu_role[] = $mr->id;
-        }
-
-        return view('dashboard.crud.menu.edit',compact(['menu','roles','menu_role']));
+        $table = Table::findOrFail($id);
+        $menu = Menu::where('url',Str::singular($table->table));
+        $mf = MenuForm::where('table_name',$table->table)->get();
+        return view('dashboard.crud.database.edit',compact(['menu','mf','table']));
     }
 
     /**
@@ -191,7 +188,18 @@ class DatabaseController extends Controller
     public function destroy($id)
     {
         $table = Table::findOrFail($id);
+        $table_name = Str::singular($table->table);
         try {
+            if (Crud::where('table_name',$table->table)->first() !== null) {
+                Artisan::call("scrap:view dashboard.crud.".$table_name.".index --force");
+                Artisan::call("scrap:view dashboard.crud.".$table_name.".create --force");
+                Artisan::call("scrap:view dashboard.crud.".$table_name.".edit --force");
+                Artisan::call("scrap:view dashboard.crud.".$table_name.".show --force");
+                
+                Crud::where('table_name',$table->table)->delete();
+                unlink(app_path()."/Models/".$table->model.'.php');
+            }
+            Menu::where('url',$table_name)->delete();
             $table->delete();
             Schema::dropIfExists($table->table);
             
@@ -204,7 +212,7 @@ class DatabaseController extends Controller
             return redirect()
                 ->back()
                 ->with([
-                    'error' => 'Error, Data gagal ditambah <br/>'. $e,
+                    'error' => 'Error, Data gagal ditambah <br/>'. $e->getMessage(),
                 ]);
         }
     }

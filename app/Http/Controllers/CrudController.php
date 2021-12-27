@@ -10,6 +10,7 @@ use App\Models\Table;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class CrudController extends Controller
@@ -97,7 +98,6 @@ class CrudController extends Controller
      */
     public function show($id)
     {
-        //
     }
 
     /**
@@ -108,7 +108,10 @@ class CrudController extends Controller
      */
     public function edit($id)
     {
-        //
+        $table = Table::where('id',$id)->first();
+        $mf = MenuForm::where('table_name',$table->table)->get();
+        $menu = Menu::where('url',Str::singular($table->table))->first();
+        return view('dashboard.crud.crud.edit',compact(['table','mf','menu']));
     }
 
     /**
@@ -120,7 +123,40 @@ class CrudController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        $table = Table::findOrFail($id);
+        $menu =  Menu::where('url',Str::singular($table->table))->first();
+        $crud = Crud::where('table_name',$table->table)->get();
+
+        try{
+
+            $menu->update([
+                'icon' => $data['icon'],
+            ]);
+
+            for ($i=0; $i < count($data['type_data']); $i++) { 
+                $crud[$i]->input_label = $data['label'][$i];
+                $crud[$i]->input_type = $data['type_data'][$i];
+                $crud[$i]->save();
+            }
+
+            return redirect()
+                    ->route('crud.index')
+                    ->with([
+                        'success' => "Hore, CRUD Berhasil di update!."
+                    ]);
+        }
+        catch (Exception $e)
+        {
+            return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with([
+                        'error' => 'Error, Gagal Update CRUD <br>'. $e->getMessage(),
+                    ]);
+        }
+        
+
     }
 
     /**
@@ -131,6 +167,37 @@ class CrudController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $table = Table::where('id',$id)->first();
+
+        $table_name = Str::singular($table->table);
+
+        try {
+
+            Artisan::call("scrap:view dashboard.crud.".$table_name.".index --force");
+            Artisan::call("scrap:view dashboard.crud.".$table_name.".create --force");
+            Artisan::call("scrap:view dashboard.crud.".$table_name.".edit --force");
+            Artisan::call("scrap:view dashboard.crud.".$table_name.".show --force");
+
+            Crud::where('table_name',$table->table)->delete();
+            unlink(app_path()."/Models/".$table->model.'.php');
+
+            Menu::where('url',$table_name)->delete();
+            $table->delete();
+            Schema::dropIfExists($table->table);
+
+            return redirect()
+                    ->route('crud.index')
+                    ->with([
+                        'success' => "Hore, CRUD Berhasil di delete!",
+                    ]);
+        }
+        catch (Exception $e)
+        {
+            return redirect()
+                    ->back()
+                    ->with([
+                        'error' => 'Error, Gagal delete CRUD <br>'. $e->getMessage(),
+                    ]);
+        }
     }
 }

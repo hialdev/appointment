@@ -22,7 +22,7 @@
             @endphp
             @for ($i=0;$i < count($dn);$i++)
                 @if (in_array($input_data[$i]->input_type,['text','number','password','email']))
-                    @include('forms.input',['label'=>$input_data[$i]->input_label,'name'=>$dn[$i]->data_name,'placeholder'=>$input_data[$i]->input_label,'value'=>'','type'=>$input_data[$i]->input_type])
+                    @include('forms.input',['label'=>$input_data[$i]->input_label,'name'=>$dn[$i]->data_name,'placeholder'=>$input_data[$i]->input_label,'value'=>(old($dn[$i]->data_name) !== null)?old($dn[$i]->data_name):'','type'=>$input_data[$i]->input_type])
                 @elseif ($input_data[$i]->input_type == 'tiny')
                     @include('forms.tinycode',['code_name'=>$dn[$i]->data_name,'code_title'=>$input_data[$i]->input_label])
                 @endif
